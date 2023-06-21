@@ -1,0 +1,20 @@
+- name: Execute echo command on pod
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Get pod name
+      k8s_info:
+        kind: Pod
+        api_version: v1
+        namespace: gitlab
+        label_selectors:
+          - app=webservice
+      register: pod_info
+
+    - name: Execute echo command
+      k8s_exec:
+        kind: Pod
+        api_version: v1
+        namespace: gitlab
+        pod: "{{ pod_info.resources[0].metadata.name }}"
+        command: echo "Hello, World!"
